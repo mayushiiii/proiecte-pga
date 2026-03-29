@@ -56,6 +56,10 @@ namespace lab
         glm::vec3 controlled_light_position;
         float angle;
         float wall_angle;
+        int shading_mode;
+        std::string shader_used;
+        
+        bool multiple_lights;
 
         float spot_angular_speed;
         float spot_cone_angle_step;

@@ -4,7 +4,7 @@ in vec3 world_position;
 in vec3 world_normal;
 in vec2 texture_coord;
 
-// MUST come from vertex shader
+// must come from vertex shader
 in mat3 TBN;
 
 uniform sampler2D texture_1;   // diffuse
@@ -23,22 +23,13 @@ uniform int material_shininess;
 layout(location = 0) out vec4 out_color;
 
 
-// get normal from normal map
-vec3 GetNormal()
-{
-    vec3 normal_tex = texture(normalMap, texture_coord).rgb;
-
-    // convert [0,1] → [-1,1]
-    normal_tex = normal_tex * 2.0 - 1.0;
-
-    // transform to world space
-    return normalize(TBN * normal_tex);
-}
-
-
 vec3 ComputePhongIllumination(vec3 light_position)
 {
-    vec3 N = GetNormal();   // replaced
+    vec3 normal_tex = texture(normalMap, texture_coord).rgb;
+    normal_tex = normal_tex * 2.0 - 1.0;   
+    // aici adaug TBN
+    normal_tex *= TBN ; 
+    vec3 N = normalize(normal_tex); 
     vec3 L = normalize(light_position - world_position);
     vec3 V = normalize(eye_position - world_position);
     vec3 R = reflect(-L, N);

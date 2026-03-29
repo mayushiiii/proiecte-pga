@@ -22,6 +22,9 @@ Proiect1::Proiect1()
 
     angle = 0;
     wall_angle = 90;
+    multiple_lights = false;
+    shading_mode = 1;
+    shader_used = "LabShader";
 }
 
 
@@ -45,11 +48,20 @@ void Proiect1::Init()
         shaders[shader->GetName()] = shader;
     }
     
-    // normal map
+    // normal map fara tbn
     {
         Shader *shader = new Shader("NormalMap2DShader");
         shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
         shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "NormalMapping2D.glsl"), GL_FRAGMENT_SHADER);
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+    
+    // normal map
+    {
+        Shader *shader = new Shader("NormalMapShader");
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "NormalMapping.glsl"), GL_FRAGMENT_SHADER);
         shader->CreateAndLink();
         shaders[shader->GetName()] = shader;
     }
@@ -82,9 +94,7 @@ void Proiect1::Init()
         Mesh* mesh = new Mesh("plane");
         mesh->LoadMesh(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives"), "plane50.obj");
         meshes[mesh->GetMeshID()] = mesh;
-        std::cout << "Vertices: " << mesh->positions.size() << std::endl;
-        std::cout << "Indices: " << mesh->indices.size() << std::endl;
-        std::cout << "TexCoords: " << mesh->texCoords.size() << std::endl;
+
         //ComputeTangents(mesh->vertices, mesh->indices);
     }
     
@@ -92,8 +102,10 @@ void Proiect1::Init()
         Mesh* mesh = new Mesh("wall");
         mesh->LoadMesh(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "props"), "wall.obj");
         meshes[mesh->GetMeshID()] = mesh;
-        std::cout << "Vertices: " << mesh->vertices.size() << std::endl;
+        std::cout << "Vertices: " << mesh->positions.size() << std::endl;
         std::cout << "Indices: " << mesh->indices.size() << std::endl;
+        std::cout << "TexCoords: " << mesh->texCoords.size() << std::endl;
+        std::cout << "Tangents" << mesh->tangents[0] << std::endl;
         //ComputeTangents(mesh->vertices, mesh->indices);
     }
 
@@ -159,67 +171,109 @@ void Proiect1::FrameStart()
 
 void Proiect1::Update(float deltaTimeSeconds)
 {
-    /*angle += glm::radians(6.0f) * deltaTimeSeconds;
-
-    for (int i = 0; i < 9; i++) {
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0), angle + i * glm::radians(360.0f) / 9, glm::vec3(0, 1, 0));
-
-        point_light_positions[i] = glm::vec3(glm::mat3(rotation) * glm::vec3(5, 1.5 + sin(Engine::GetElapsedTime() + i/2.0f), 0));
-        spot_light_positions[i] = glm::vec3(glm::mat3(rotation) * glm::vec3(3, 1.5 + sin(Engine::GetElapsedTime() + i / 2.0f), 0));
-    }*/
     
-    // perete simplu, fara map-uri
-    
+    // Pereti verticali : aici diferentele nu se vor vedea la fel de tare 
     {
-        glm::mat4 model = glm::mat4(1);
-        model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -1.0f));
-        model = glm::rotate(model, glm::radians(wall_angle), glm::vec3(1, 0, 0));
-        RenderSimpleMesh(meshes["wall"], shaders["LabShader"], model, &materials["wall"]);
+        // perete simplu, fara map-uri
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -1.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["LabShader"], model, &materials["wall"]);
+        }
+    
+        // perete cu normal map, fara tangente
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(2.0f, 1.0f, -1.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["NormalMap2DShader"], model, &materials["wall"]);
+        }
+    
+        // perete cu normal map, fara tangente
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(6.0f, 1.0f, -1.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["NormalMapShader"], model, &materials["wall"]);
+        }
     }
     
-    // perete cu normal map, fara tangente
+    // pereti orizontali pt a vizualiza diferenta facuta de tangente
     {
-        glm::mat4 model = glm::mat4(1);
-        model = glm::translate(model, glm::vec3(2.0f, 1.0f, -1.0f));
-        model = glm::rotate(model, glm::radians(wall_angle), glm::vec3(1, 0, 0));
-        RenderSimpleMesh(meshes["wall"], shaders["NormalMap2DShader"], model, &materials["wall"]);
+        // perete simplu, fara map-uri
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(-2.0f, -1.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["LabShader"], model, &materials["wall"]);
+        }
+    
+        // perete cu normal map, fara tangente
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(2.0f, -1.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["NormalMap2DShader"], model, &materials["wall"]);
+        }
+    
+        // perete cu normal map, fara tangente
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(6.0f, -1.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["NormalMapShader"], model, &materials["wall"]);
+        }
     }
     
-    // momentan las doar lumina miscatoare
+    // perete stingher cu toggle-uri multiple
+    {
+        glm::mat4 model = glm::mat4(1);
+        model = glm::translate(model, glm::vec3(0.0f, 1.0f, 7.0f));
+        model = glm::rotate(model, glm::radians(wall_angle), glm::vec3(1, 0, 0));
+        RenderSimpleMesh(meshes["wall"], shaders[shader_used], model, &materials["wall"]);
+    }
+    
+    
+    // am adaugat toggle pt mai multe surse de lumina, mi se pare ca se vad cam aiurea tho deci schimbati daca vreti
+    // merge o sg data pt ca apoi raman in shader datele :))))))))))
+    if (multiple_lights)
+    {
+        {
+            angle += glm::radians(6.0f) * deltaTimeSeconds;
+
+            for (int i = 0; i < 9; i++) {
+                glm::mat4 rotation = glm::rotate(glm::mat4(1.0), angle + i * glm::radians(360.0f) / 9, glm::vec3(0, 1, 0));
+
+                point_light_positions[i] = glm::vec3(glm::mat3(rotation) * glm::vec3(5, 1.5 + sin(Engine::GetElapsedTime() + i/2.0f), 0));
+                spot_light_positions[i] = glm::vec3(glm::mat3(rotation) * glm::vec3(3, 1.5 + sin(Engine::GetElapsedTime() + i / 2.0f), 0));
+            }
+        }
+        // Render the point lights in the scene
+        for (int i = 0; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, point_light_positions[i]);
+            model = glm::scale(model, glm::vec3(0.1f));
+            RenderMesh(meshes["sphere"], shaders["LabShader"], model);
+        }
+
+        // Render the spot lights in the scene
+        for (int i = 0; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, spot_light_positions[i]);
+            model = glm::scale(model, glm::vec3(0.1f));
+            RenderMesh(meshes["sphere"], shaders["LabShader"], model);
+        }
+    }
+    
     {
         glm::mat4 model = glm::mat4(1);
         model = glm::translate(model, point_light_positions[9]);
         model = glm::scale(model, glm::vec3(0.1f));
         RenderMesh(meshes["sphere"], shaders["LabShader"], model);
     }
-    /*
-    {
-        glm::mat4 model = glm::mat4(1);
-        model = glm::translate(model, spot_light_positions[9]);
-        model = glm::scale(model, glm::vec3(0.1f));
-        RenderMesh(meshes["sphere"], shaders["LabShader"], model);
-    }
-    */
-    
-
-    
-    /*// Render the point lights in the scene
-    for (int i = 0; i < 1-; i++)
-    {
-        glm::mat4 model = glm::mat4(1);
-        model = glm::translate(model, point_light_positions[i]);
-        model = glm::scale(model, glm::vec3(0.1f));
-        RenderMesh(meshes["sphere"], shaders["LabShader"], model);
-    }*/
-
-    /*// Render the spot lights in the scene
-    for (int i = 0; i < 10; i++)
-    {
-        glm::mat4 model = glm::mat4(1);
-        model = glm::translate(model, spot_light_positions[i]);
-        model = glm::scale(model, glm::vec3(0.1f));
-        RenderMesh(meshes["sphere"], shaders["LabShader"], model);
-    }*/
     
 }
 
@@ -241,7 +295,6 @@ void Proiect1::RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& mod
     
     // Send shader uniforms for light & material properties
     
-
     glUniform1i(glGetUniformLocation(shader->program, "point_lights_count"), 11);
     glUniform3fv(glGetUniformLocation(shader->program, "point_light_positions"), 11, glm::value_ptr(point_light_positions[0]));
     glUniform3fv(glGetUniformLocation(shader->program, "point_light_colors"), 11, glm::value_ptr(point_light_colors[0]));
@@ -251,7 +304,7 @@ void Proiect1::RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& mod
     // TODO(student): Set eye position (camera position) uniform
     glUniform3fv(glGetUniformLocation(shader->program, "eye_position"), 1, glm::value_ptr(eye_position));
 
-    glm::vec3 material_ka = glm::vec3(2.0f);
+    glm::vec3 material_ka = glm::vec3(1.0f);
     glm::vec3 material_kd = glm::vec3(2.0f);
     glm::vec3 material_ks = glm::vec3(2.0f);
     int material_shininess = 30;
@@ -303,18 +356,6 @@ void Proiect1::RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& mod
             glUniform1i(glGetUniformLocation(shader->program, "heightMap"), 2);
         }
     }
-
-    // tangent
-    /*
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(VertexFormat),
-                          (void*)offsetof(VertexFormat, tangent));
-
-    // bitangent
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(VertexFormat),
-                          (void*)offsetof(VertexFormat, bitangent));
-                          */
 
     // Draw the object
     glBindVertexArray(mesh->GetBuffers()->m_VAO);
@@ -380,6 +421,13 @@ Texture2D* Proiect1::CreateTexture(unsigned int width, unsigned int height,
     SAFE_FREE_ARRAY(data);
     return texture;
 }
+
+// nota aici :
+// aici sunt calculate tangentele manual, ar fi de revazut; am ajuns sa nu mai testez metoda asta pt ca am optat
+// in schimb ca atunci cand imi incarc un mesh dintr-un fisier, sa setez inca un flag pt
+// a calcula tangentele si de acolo iau ce este necesar pt matricea TBN 
+// daca vrea cnv sa faca partea asta sa mearga ar fi de umblat la vertecsi pt ca cu loadmesh pare ca au alt nume
+// si ar fi de trimis catre shader, ceea ce eu cu metoda mea incarc direct catre gpu atunci cand incarc mesh-ul
 
 void Proiect1::ComputeTangents(std::vector<VertexFormat>& vertices,
                      const std::vector<unsigned int>& indices)
@@ -474,9 +522,9 @@ void Proiect1::OnInputUpdate(float deltaTime, int mods)
         if (window->KeyHold(GLFW_KEY_LEFT)) light_direction = glm::vec3(glm::rotate(glm::mat4(1.0f), glm::radians(deltaTime * spot_angular_speed), glm::vec3(0, 0, 1)) * glm::vec4(light_direction, 1.0f));
         if (window->KeyHold(GLFW_KEY_RIGHT)) light_direction = glm::vec3(glm::rotate(glm::mat4(1.0f), glm::radians(-deltaTime * spot_angular_speed), glm::vec3(0, 0, 1)) * glm::vec4(light_direction, 1.0f));
 
-        // aici se schimba unghiul
+        /*// aici se schimba unghiul
         if (window->KeyHold(GLFW_KEY_1)) angle += deltaTime * spot_cone_angle_step;
-        if (window->KeyHold(GLFW_KEY_2)) angle -= deltaTime * spot_cone_angle_step;
+        if (window->KeyHold(GLFW_KEY_2)) angle -= deltaTime * spot_cone_angle_step;*/
 
     }
 }
@@ -486,17 +534,33 @@ void Proiect1::OnKeyPress(int key, int mods)
 {
     // Add key press event
     if (key == GLFW_KEY_F) {
-        controlled_light_source_index = (controlled_light_source_index + 1) % 2;
+        multiple_lights = !multiple_lights;
     }
     
-    if (key == GLFW_KEY_R) {
-        if (wall_angle == 90) {;
-            wall_angle = 0;
-        } else {
-            wall_angle = 90;
+    if (key == GLFW_KEY_R)
+    {
+        if (wall_angle <= 90) {
+            wall_angle += 30;
         }
-        
+        else {
+            wall_angle = 0;
+        }
     }
+    
+    if (key == GLFW_KEY_1)
+    {
+        shader_used = "LabShader";
+    }
+    if (key == GLFW_KEY_2)
+    {
+        shader_used = "NormalMap2DShader";
+    }
+    if (key == GLFW_KEY_3)
+    {
+        shader_used = "NormalMapShader";
+    }
+    // todo: toggle pentru parallax
+    
 }
 
 

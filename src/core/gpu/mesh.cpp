@@ -202,7 +202,7 @@ bool Mesh::InitFromScene(const aiScene* pScene)
     
 
     buffers->ReleaseMemory();
-    *buffers = gpu_utils::UploadData(positions, normals, texCoords, indices);
+    *buffers = gpu_utils::UploadData(positions, normals, texCoords, indices, tangents, bitangents);
     return buffers->m_VAO != 0;
 }
 
@@ -220,6 +220,20 @@ void Mesh::InitMesh(const aiMesh* paiMesh)
         positions.push_back(glm::vec3(pPos->x, pPos->y, pPos->z));
         normals.push_back(glm::vec3(pNormal->x, pNormal->y, pNormal->z));
         texCoords.push_back(glm::vec2(pTexCoord->x, pTexCoord->y));
+        
+        if (paiMesh->HasTangentsAndBitangents())
+        {
+            const aiVector3D* pTangent   = &(paiMesh->mTangents[i]);
+            const aiVector3D* pBitangent = &(paiMesh->mBitangents[i]);
+
+            tangents.push_back(glm::vec3(pTangent->x, pTangent->y, pTangent->z));
+            bitangents.push_back(glm::vec3(pBitangent->x, pBitangent->y, pBitangent->z));
+        }
+        else
+        {
+            tangents.push_back(glm::vec3(0));
+            bitangents.push_back(glm::vec3(0));
+        }
     }
 
     // Init the index buffer
@@ -231,6 +245,7 @@ void Mesh::InitMesh(const aiMesh* paiMesh)
         if (Face.mNumIndices == 4)
             indices.push_back(Face.mIndices[3]);
     }
+    
 }
 
 
