@@ -54,6 +54,8 @@ void Mesh::ClearData()
     texCoords.clear();
     indices.clear();
     normals.clear();
+    tangents.clear();
+    bitangents.clear();
 }
 
 
@@ -68,6 +70,8 @@ bool Mesh::LoadMesh(const std::string& fileLocation,
 
     unsigned int flags = aiProcess_GenSmoothNormals | aiProcess_FlipUVs;
     if (glDrawMode == GL_TRIANGLES) flags |= aiProcess_Triangulate;
+    // am adaugat aici un flag care calculeaza tangentele si bitangentele pentru fiecare vertex, necesare pentru normal mapping
+    flags |= aiProcess_CalcTangentSpace;
 
     const aiScene* pScene = Importer.ReadFile(file, flags);
 
@@ -181,6 +185,9 @@ bool Mesh::InitFromScene(const aiScene* pScene)
     normals.reserve(nrVertices);
     texCoords.reserve(nrVertices);
     indices.reserve(nrIndices);
+    tangents.reserve(nrVertices);
+    bitangents.reserve(nrVertices);
+    
 
     // Initialize the meshes in the scene one by one
     for (unsigned int i = 0 ; i < meshEntries.size() ; i++)
@@ -191,6 +198,8 @@ bool Mesh::InitFromScene(const aiScene* pScene)
 
     if (useMaterial && !InitMaterials(pScene))
         return false;
+    
+    
 
     buffers->ReleaseMemory();
     *buffers = gpu_utils::UploadData(positions, normals, texCoords, indices);

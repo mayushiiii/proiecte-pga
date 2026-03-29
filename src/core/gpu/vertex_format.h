@@ -22,4 +22,8 @@ struct VertexFormat
 
     // Vertex color
     glm::vec3 color;
+    
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
+    
 };

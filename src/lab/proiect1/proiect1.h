@@ -2,6 +2,7 @@
 
 #include "components/simple_scene.h"
 #include "components/transform.h"
+#include <unordered_map>
 
 
 namespace lab
@@ -19,8 +20,22 @@ namespace lab
         void Update(float deltaTimeSeconds) override;
         void FrameEnd() override;
 
-        void RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix, const glm::vec3 &color = glm::vec3(1));
+        struct MyMaterial {
+            Texture2D* diffuse = nullptr;
+            Texture2D* normal = nullptr;
+            Texture2D* height = nullptr;   // for parallax later
+            
+        };
 
+
+        
+        void Proiect1::RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, MyMaterial* material);
+        Texture2D* Proiect1::LoadTexture(const char* imagePath);
+        Texture2D* Proiect1::CreateTexture(unsigned int width, unsigned int height, unsigned int channels, unsigned char* data);
+        void Proiect1::ComputeTangents(std::vector<VertexFormat>& vertices,const std::vector<unsigned int>& indices);
+
+        std::unordered_map<std::string, MyMaterial> materials;
+        
         void OnInputUpdate(float deltaTime, int mods) override;
         void OnKeyPress(int key, int mods) override;
         void OnKeyRelease(int key, int mods) override;
@@ -40,6 +55,7 @@ namespace lab
         int controlled_light_source_index;
         glm::vec3 controlled_light_position;
         float angle;
+        float wall_angle;
 
         float spot_angular_speed;
         float spot_cone_angle_step;

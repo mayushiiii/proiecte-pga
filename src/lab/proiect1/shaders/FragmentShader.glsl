@@ -7,6 +7,7 @@ in vec3 world_normal;
 in vec2 texture_coord;
 
 uniform sampler2D texture_1;
+
 // Uniforms for light properties
 uniform int point_lights_count;
 uniform vec3 point_light_positions[11];

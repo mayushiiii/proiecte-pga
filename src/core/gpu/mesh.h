@@ -105,6 +105,9 @@ class Mesh
     std::vector<glm::vec2> texCoords;
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
+   // adaug tangente si bitangente pt normal mapping
+    std::vector <glm::vec3> tangents;
+    std::vector <glm::vec3> bitangents;
 
  protected:
     std::string fileLocation;
