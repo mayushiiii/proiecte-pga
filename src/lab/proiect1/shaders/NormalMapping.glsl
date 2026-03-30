@@ -27,9 +27,10 @@ vec3 ComputePhongIllumination(vec3 light_position)
 {
     vec3 normal_tex = texture(normalMap, texture_coord).rgb;
     normal_tex = normal_tex * 2.0 - 1.0;   
+    // nota: trebuie sa intorc y-ul aici
+    normal_tex.y = -normal_tex.y;
     // aici adaug TBN
-    normal_tex *= TBN ; 
-    vec3 N = normalize(normal_tex); 
+    vec3 N = normalize(normal_tex * TBN); 
     vec3 L = normalize(light_position - world_position);
     vec3 V = normalize(eye_position - world_position);
     vec3 R = reflect(-L, N);
