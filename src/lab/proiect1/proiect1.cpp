@@ -66,11 +66,27 @@ void Proiect1::Init()
         shaders[shader->GetName()] = shader;
     }
     
-    // parallax - de modificat
+    // parallax simplu
     {
         Shader *shader = new Shader("ParallaxMapShader");
-        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "Lab07", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
-        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "Lab07", "shaders", "FragmentShader.glsl"), GL_FRAGMENT_SHADER);
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "ParallaxMapping.glsl"), GL_FRAGMENT_SHADER);
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+    // parallax steep
+    {
+        Shader *shader = new Shader("SteepParallaxMapShader");
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "SteepParallaxMapping.glsl"), GL_FRAGMENT_SHADER);
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+    // parallax occlusion
+    {
+        Shader *shader = new Shader("ParallaxOcclusionMapShader");
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "ParallaxOcclusionMapping.glsl"), GL_FRAGMENT_SHADER);
         shader->CreateAndLink();
         shaders[shader->GetName()] = shader;
     }
@@ -110,12 +126,11 @@ void Proiect1::Init()
     }
 
     // materiale
-    // todo: obtinut height map
     
     materials["wall"] = {
         LoadTexture("src\\lab\\proiect1\\textures\\wall_diffuse.png"),
         LoadTexture("src\\lab\\proiect1\\textures\\wall_normal.png"),
-        nullptr
+        LoadTexture("src\\lab\\proiect1\\textures\\wall_height.png"),
     };
     
 
@@ -197,6 +212,27 @@ void Proiect1::Update(float deltaTimeSeconds)
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["NormalMapShader"], model, &materials["wall"]);
         }
+        // perete cu parallax map simplu
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(10.0f, 1.0f, -1.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["ParallaxMapShader"], model, &materials["wall"]); 
+        }
+        // perete cu parallax map steep
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(14.0f, 1.0f, -1.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["SteepParallaxMapShader"], model, &materials["wall"]); 
+        }
+        // perete cu parallax map occlusion
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(18.0f, 1.0f, -1.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["ParallaxOcclusionMapShader"], model, &materials["wall"]); 
+        }
     }
     
     // pereti orizontali pt a vizualiza diferenta facuta de tangente
@@ -223,6 +259,27 @@ void Proiect1::Update(float deltaTimeSeconds)
             model = glm::translate(model, glm::vec3(6.0f, -1.0f, 1.0f));
             model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["NormalMapShader"], model, &materials["wall"]);
+        }
+        // perete cu parallax map simplu
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(10.0f, -1.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["ParallaxMapShader"], model, &materials["wall"]);
+        }
+        // perete cu parallax map steep
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(14.0f, -1.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["SteepParallaxMapShader"], model, &materials["wall"]);
+        }
+        // perete cu parallax map occlusion
+        {
+            glm::mat4 model = glm::mat4(1);
+            model = glm::translate(model, glm::vec3(18.0f, -1.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
+            RenderSimpleMesh(meshes["wall"], shaders["ParallaxOcclusionMapShader"], model, &materials["wall"]);
         }
     }
     
@@ -559,7 +616,15 @@ void Proiect1::OnKeyPress(int key, int mods)
     {
         shader_used = "NormalMapShader";
     }
-    // todo: toggle pentru parallax
+    if (key == GLFW_KEY_4) {
+        shader_used = "ParallaxMapShader";
+    }
+    if (key == GLFW_KEY_5) {
+        shader_used = "SteepParallaxMapShader";
+    }
+    if (key == GLFW_KEY_6) {
+        shader_used = "ParallaxOcclusionMapShader";
+    }
     
 }
 
