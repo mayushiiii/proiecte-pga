@@ -192,7 +192,7 @@ void Proiect1::Update(float deltaTimeSeconds)
         // perete simplu, fara map-uri
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -1.0f));
+            model = glm::translate(model, glm::vec3(0.0f, 1.0f, -1.0f));
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["LabShader"], model, &materials["wall"]);
         }
@@ -200,7 +200,7 @@ void Proiect1::Update(float deltaTimeSeconds)
         // perete cu normal map, fara tangente
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(2.0f, 1.0f, -1.0f));
+            model = glm::translate(model, glm::vec3(7.0f, 1.0f, -1.0f));
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["NormalMap2DShader"], model, &materials["wall"]);
         }
@@ -208,28 +208,28 @@ void Proiect1::Update(float deltaTimeSeconds)
         // perete cu normal map, fara tangente
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(6.0f, 1.0f, -1.0f));
+            model = glm::translate(model, glm::vec3(14.0f, 1.0f, -1.0f));
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["NormalMapShader"], model, &materials["wall"]);
         }
         // perete cu parallax map simplu
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(10.0f, 1.0f, -1.0f));
+            model = glm::translate(model, glm::vec3(21.0f, 1.0f, -1.0f));
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["ParallaxMapShader"], model, &materials["wall"]); 
         }
         // perete cu parallax map steep
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(14.0f, 1.0f, -1.0f));
+            model = glm::translate(model, glm::vec3(28.0f, 1.0f, -1.0f));
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["SteepParallaxMapShader"], model, &materials["wall"]); 
         }
         // perete cu parallax map occlusion
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(18.0f, 1.0f, -1.0f));
+            model = glm::translate(model, glm::vec3(35.0f, 1.0f, -1.0f));
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["ParallaxOcclusionMapShader"], model, &materials["wall"]); 
         }
@@ -240,7 +240,7 @@ void Proiect1::Update(float deltaTimeSeconds)
         // perete simplu, fara map-uri
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(-2.0f, -1.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(0.0f, -1.0f, 1.0f));
             model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["LabShader"], model, &materials["wall"]);
         }
@@ -248,7 +248,7 @@ void Proiect1::Update(float deltaTimeSeconds)
         // perete cu normal map, fara tangente
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(2.0f, -1.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(7.0f, -1.0f, 1.0f));
             model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["NormalMap2DShader"], model, &materials["wall"]);
         }
@@ -256,28 +256,28 @@ void Proiect1::Update(float deltaTimeSeconds)
         // perete cu normal map, fara tangente
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(6.0f, -1.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(14.0f, -1.0f, 1.0f));
             model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["NormalMapShader"], model, &materials["wall"]);
         }
         // perete cu parallax map simplu
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(10.0f, -1.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(21.0f, -1.0f, 1.0f));
             model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["ParallaxMapShader"], model, &materials["wall"]);
         }
         // perete cu parallax map steep
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(14.0f, -1.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(28.0f, -1.0f, 1.0f));
             model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["SteepParallaxMapShader"], model, &materials["wall"]);
         }
         // perete cu parallax map occlusion
         {
             glm::mat4 model = glm::mat4(1);
-            model = glm::translate(model, glm::vec3(18.0f, -1.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(35.0f, -1.0f, 1.0f));
             model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1, 0, 0));
             RenderSimpleMesh(meshes["wall"], shaders["ParallaxOcclusionMapShader"], model, &materials["wall"]);
         }
@@ -286,7 +286,7 @@ void Proiect1::Update(float deltaTimeSeconds)
     // perete stingher cu toggle-uri multiple
     {
         glm::mat4 model = glm::mat4(1);
-        model = glm::translate(model, glm::vec3(0.0f, 1.0f, 7.0f));
+        model = glm::translate(model, glm::vec3(-7.0f, 1.0f, 1.0f));
         model = glm::rotate(model, glm::radians(wall_angle), glm::vec3(1, 0, 0));
         RenderSimpleMesh(meshes["wall"], shaders[shader_used], model, &materials["wall"]);
     }
