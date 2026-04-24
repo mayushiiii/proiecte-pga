@@ -26,10 +26,14 @@ layout(location = 0) out vec4 out_color;
 vec2 ParallaxMapping(vec2 texture_coord, vec3 direction)
 {
 //steep parallax
-    const float num_layers = 10;
+    //nr de straturi variaza in functie de unghiul la care ne uitam la obiect
+    const float minLayers = 8;
+    const float maxLayers = 32;
+    float num_layers = mix(maxLayers, minLayers, max(dot(vec3(0,0,1), direction),0));
+    //const float num_layers = 10;
     float layer_depth = 1.0/num_layers;
     float current_layer_depth = 0.0;
-    vec2 P = direction.xy * 0.02;
+    vec2 P = direction.xy * 0.1;
     vec2 deltaTexCoords = P / num_layers;
 
     vec2 currentTexCoords = texture_coord;
@@ -106,6 +110,7 @@ void main()
 
 
     vec2 ptex_coord = ParallaxMapping(texture_coord, direction);
+    //posibil comentata linia urm
     if(ptex_coord.x > 1.0 || ptex_coord.y > 1.0 || ptex_coord.x <  0.0 || ptex_coord.y < 0.0) discard;
 
     vec4 tex_color = texture(diffuseMap, ptex_coord);

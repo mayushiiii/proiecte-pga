@@ -74,6 +74,15 @@ void Proiect1::Init()
         shader->CreateAndLink();
         shaders[shader->GetName()] = shader;
     }
+    //v2
+    {
+        Shader *shader = new Shader("ParallaxShader");
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect1", "shaders", "ParallaxMappingv2.glsl"), GL_FRAGMENT_SHADER);
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+
     // parallax steep
     {
         Shader *shader = new Shader("SteepParallaxMapShader");
@@ -82,6 +91,7 @@ void Proiect1::Init()
         shader->CreateAndLink();
         shaders[shader->GetName()] = shader;
     }
+
     // parallax occlusion
     {
         Shader *shader = new Shader("ParallaxOcclusionMapShader");
@@ -624,6 +634,9 @@ void Proiect1::OnKeyPress(int key, int mods)
     }
     if (key == GLFW_KEY_6) {
         shader_used = "ParallaxOcclusionMapShader";
+    }
+    if (key == GLFW_KEY_7) {
+        shader_used = "ParallaxShader";
     }
     
 }

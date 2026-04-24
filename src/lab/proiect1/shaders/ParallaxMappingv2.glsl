@@ -25,41 +25,11 @@ layout(location = 0) out vec4 out_color;
 
 vec2 ParallaxMapping(vec2 texture_coord, vec3 direction)
 {
-//steep parallax
-    //nr de straturi variaza in functie de unghiul la care ne uitam la obiect
-    const float minLayers = 8;
-    const float maxLayers = 32;
-    float num_layers = mix(maxLayers, minLayers, max(dot(vec3(0,0,1), direction),0));
-    //const float num_layers = 10;
-    float layer_depth = 1.0/num_layers;
-    float current_layer_depth = 0.0;
-    vec2 P = direction.xy * 0.1;
-    vec2 deltaTexCoords = P / num_layers;
-
-    vec2 currentTexCoords = texture_coord;
-    float currentHeightMapValue = texture(heightMap, currentTexCoords).r;
-
-    while(current_layer_depth<currentHeightMapValue)
-    {
-        currentTexCoords -= deltaTexCoords;
-        currentHeightMapValue = texture(heightMap, currentTexCoords).r;
-        current_layer_depth += layer_depth;
-    }
-    //return currentTexCoords;
-
-//parallax occlusion - steep parallax + 
-    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
-    float afterHeight = currentHeightMapValue - current_layer_depth;
-    float beforeHeight = texture(heightMap, prevTexCoords).r - current_layer_depth + layer_depth;
-    float weight = afterHeight / (afterHeight - beforeHeight);
-    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
-
-    return finalTexCoords;
-    
 //normal parallax
-//    float height = texture(heightMap, texture_coord).r;
-//    vec2 p = direction.xy / direction.z * (height * 0.03);
-//    return texture_coord - p;
+    float height = texture(heightMap, texture_coord).r;
+    vec2 p = direction.xy / direction.z * (height * 0.1);
+    //vec2 p = direction.xy * (height * 0.1);
+    return texture_coord - p;
 }
 
 vec3 ComputePhongIllumination(vec3 light_position, vec2 ptex_coord)
@@ -124,7 +94,7 @@ void main()
 
 
     vec2 ptex_coord = ParallaxMapping(texture_coord, direction);
-    //posibil comentata linia urm
+    //posibil comentatata linia urm
     if(ptex_coord.x > 1.0 || ptex_coord.y > 1.0 || ptex_coord.x <  0.0 || ptex_coord.y < 0.0) discard;
 
     vec4 tex_color = texture(diffuseMap, ptex_coord);

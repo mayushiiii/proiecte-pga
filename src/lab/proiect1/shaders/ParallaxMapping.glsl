@@ -27,7 +27,8 @@ vec2 ParallaxMapping(vec2 texture_coord, vec3 direction)
 {
 //normal parallax
     float height = texture(heightMap, texture_coord).r;
-    vec2 p = direction.xy / direction.z * (height * 0.02);
+    //vec2 p = direction.xy / direction.z * (height * 0.1);
+    vec2 p = direction.xy * (height * 0.1);
     return texture_coord - p;
 }
 
@@ -93,6 +94,7 @@ void main()
 
 
     vec2 ptex_coord = ParallaxMapping(texture_coord, direction);
+    //posibil comentatata linia urm
     if(ptex_coord.x > 1.0 || ptex_coord.y > 1.0 || ptex_coord.x <  0.0 || ptex_coord.y < 0.0) discard;
 
     vec4 tex_color = texture(diffuseMap, ptex_coord);
