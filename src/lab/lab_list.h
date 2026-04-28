@@ -15,3 +15,4 @@
 #include "lab/lab11/lab11.h"
 #include "lab/tema/tema.h"
 #include "lab/proiect1/proiect1.h"
+#include "lab/proiect2/proiect2.h"
