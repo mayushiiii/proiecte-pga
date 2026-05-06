@@ -20,6 +20,7 @@ Proiect2::Proiect2()
     scene_fbo = 0;
     scene_color_texture = 0;
     scene_depth_texture = 0;
+    shader_used = "FloorSSR";
 }
 
 
@@ -98,6 +99,14 @@ void Proiect2::Init()
         Shader* shader = new Shader("FloorSSR");
         shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect2", "shaders", "FloorSSR.VS.glsl"), GL_VERTEX_SHADER);
         shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect2", "shaders", "FloorSSR.FS.glsl"), GL_FRAGMENT_SHADER);
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+
+    {
+        Shader* shader = new Shader("FloorSSR_BS");
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect2", "shaders", "FloorSSR.VS.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(window->props.selfDir, "src/lab", "proiect2", "shaders", "FloorSSR_BS.FS.glsl"), GL_FRAGMENT_SHADER);
         shader->CreateAndLink();
         shaders[shader->GetName()] = shader;
     }
@@ -236,7 +245,7 @@ void Proiect2::DrawScene(bool useSSR)
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -4.0f));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.35f));
 
-        RenderSimpleMesh(meshes["plane"], shaders["FloorSSR"], modelMatrix, nullptr);
+        RenderSimpleMesh(meshes["plane"], shaders[shader_used], modelMatrix, nullptr);
     }
 
     // bambus
@@ -304,7 +313,7 @@ void Proiect2::RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& mod
     glUniform1i(has_texture_location, texture1 != nullptr);
 
 	// trimitem informatii in plus pentru shaderul de SSR
-    if (shader == shaders["FloorSSR"])
+    if (shader == shaders["FloorSSR"] || shader == shaders["FloorSSR_BS"])
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, scene_color_texture);
@@ -358,7 +367,12 @@ void Proiect2::OnInputUpdate(float deltaTime, int mods)
 
 void Proiect2::OnKeyPress(int key, int mods)
 {
-    // Add key press event
+    if (key == GLFW_KEY_1) {
+        shader_used = "FloorSSR";
+    }
+    if (key == GLFW_KEY_2) {
+        shader_used = "FloorSSR_BS";
+    }
 }
 
 

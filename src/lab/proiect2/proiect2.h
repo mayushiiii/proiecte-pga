@@ -45,6 +45,8 @@ namespace lab
         GLuint scene_color_texture;
         GLuint scene_depth_texture;
 
+        std::string shader_used;
+
         void CreateFramebuffer(int width, int height);
         void DrawScene(bool useSSR);
     };
