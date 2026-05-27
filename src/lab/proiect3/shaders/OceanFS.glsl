@@ -122,18 +122,39 @@ vec3 ComputeAmbientComponent()
 
 void main()
 {
-    // Sample the texture color
-    //vec4 tex_color = texture(texture_1, texture_coord);
+    vec3 N = normalize(world_normal);
+    vec3 V = normalize(eye_position - world_position);
 
-    // Compute lighting
-    vec3 illumination = ComputePointLightSourcesIllumination()
-        + ComputeSpotLightSourcesIllumination()
-        + ComputeAmbientComponent();
+    // Lumina principală: folosește becul alb controlabil, index 9
+    vec3 light_position = point_light_positions[9];
+    vec3 L = normalize(light_position - world_position);
+    vec3 R = reflect(-L, N);
 
-    // Combine lighting with the texture color (modulate)
-    //vec3 final_rgb = illumination * tex_color.rgb;
+    float diff = max(dot(N, L), 0.0);
 
-    // Preserve texture alpha
-    //out_color = vec4(final_rgb, tex_color.a);
-    out_color = vec4(illumination, 1.0);
+    // Specular mai îngust, mai "wet", mai puțin plastic
+    float spec = pow(max(dot(R, V), 0.0), 120.0);
+
+    // Fresnel: apa devine mai luminoasă la unghiuri joase
+    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 5.0);
+
+    // Culori mai oceanice, nu albastru pastel plastic
+    vec3 deepWater = vec3(0.025, 0.120, 0.200);
+    vec3 shallowWater = vec3(0.075, 0.370, 0.480);
+    vec3 skyReflection = vec3(0.63, 0.80, 0.90);
+
+    // Variație după orientarea normalei
+    float facingUp = clamp(N.y, 0.0, 1.0);
+    vec3 waterColor = mix(deepWater, shallowWater, facingUp);
+
+    // Reflexie de cer prin Fresnel
+    vec3 color = mix(waterColor, skyReflection, fresnel * 0.65);
+
+    // Iluminare simplă
+    color *= 0.18 + diff * 0.45;
+
+    // Highlight alb, nu albastru saturat
+    color += vec3(1.0) * spec * 0.45;
+
+    out_color = vec4(color, 1.0);
 }

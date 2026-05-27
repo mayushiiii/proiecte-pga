@@ -10,7 +10,6 @@ uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
 
-// The new texture uniform you bound in C++
 uniform sampler2D displacement_map;
 
 // Output value to fragment shader
@@ -24,7 +23,7 @@ void main()
 
     // ---- Displace the vertex ----
     vec4 spectrum = texture(displacement_map, v_texture_coord);
-    vec3 displacement = spectrum.xyz * 0.2;
+    vec3 displacement = spectrum.xyz * 0.1;
     vec3 displaced_position = v_position + displacement;
     world_position = (Model * vec4(displaced_position, 1.0)).xyz;
 

@@ -90,8 +90,8 @@ void Proiect3::Init()
 
     // Light & material properties
     {
-        point_light_positions[9] = glm::vec3(0, 1, 1);
-        spot_light_positions[9] = glm::vec3(1, 1, 1);
+        point_light_positions[9] = glm::vec3(0, 1, -5);
+        spot_light_positions[9] = glm::vec3(1, 1,-5);
 
 
         for (int i = 0; i < 10; i++) {
@@ -197,7 +197,7 @@ void Proiect3::Update(float deltaTimeSeconds)
     glm::mat4 ocean = glm::mat4(1);
     ocean = glm::translate(ocean, glm::vec3(0, 0, -10));
     ocean = glm::scale(ocean, glm::vec3(15));
-    RenderOceanGrid(shaders["OceanShader"], ocean, glm::vec3(0.35, 0.55f, 0.8f));
+    RenderOceanGrid(shaders["OceanShader"], ocean, glm::vec3(0.02f, 0.16f, 0.25f));
 
     if (show_lights)
     {
@@ -337,9 +337,10 @@ void Proiect3::RenderOceanGrid(Shader* shader, const glm::mat4 & model, const gl
 
     glUniform3fv(glGetUniformLocation(shader->program, "material_kd"), 1, glm::value_ptr(object_color));
 
-    glUniform3fv(glGetUniformLocation(shader->program, "material_ks"), 1, glm::value_ptr(object_color));
+    glm::vec3 whiteSpecular = glm::vec3(1.0f);
 
-    glUniform1i(glGetUniformLocation(shader->program, "material_shininess"), 30);
+    glUniform3fv(glGetUniformLocation(shader->program, "material_ks"), 1, glm::value_ptr(whiteSpecular));
+    glUniform1i(glGetUniformLocation(shader->program, "material_shininess"), 120);
 
     glUniformMatrix4fv(glGetUniformLocation(shader->program, "Model"), 1, GL_FALSE, glm::value_ptr(model));
 

@@ -57,7 +57,7 @@ vec3 SSR(vec3 viewPosition, vec3 viewNormal)
     vec3 reflectionDirection = reflect(viewDirection, normalize(viewNormal));
 
     float viewSpaceStepSize = 0.05;
-    float maxDistance = 8.0;
+    float maxDistance = 16.0;
     //marja de eroare
     float thickness = 0.08;
 
@@ -103,8 +103,8 @@ vec3 SSR(vec3 viewPosition, vec3 viewNormal)
 
 void main()
 {
-    vec3 floorColor = vec3(0.8);
+    vec3 floorColor = vec3(0.4);
     vec3 reflectionColor = SSR(viewPosition, normalize(viewNormal));
 
-    out_color = vec4(floorColor + reflectionColor * 0.35, 1.0);
+    out_color = vec4(floorColor + reflectionColor * 0.5, 1.0);
 }
