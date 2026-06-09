@@ -39,12 +39,12 @@ void main()
         float l = wave_lengths[i];
 
         float k = (2 * pi) / l;
-        float omega = 0.3 * sqrt(g * k); //viteza valurilor
-        float Q = 1; //steepness - cu cat e mai mic, cu atat sunt mai smooth valurile
-        
-        // Theta calculation: k(D . xz) - w*t
-        //float theta = k * dot(d, initial_position.xy) - (omega * time); //teoretic acelasi lucru cu linia urm, practic nu
-        float theta = k * (d.x * initial_position.x + d.y * initial_position.z) - (omega * time);
+        float omega = sqrt(g * k); //viteza valurilor
+        float Q = 1 / (omega * a * num_waves); //steepness - cu cat e mai mic, cu atat sunt mai rotunjite valurile, cu cat e mai mare, cu atat sunt mai ascutite valurile
+
+        // theta : k(D . xz) - w*t
+        //float theta = k * dot(d, initial_position.xy) - (omega * 0.3 * time); //teoretic acelasi lucru cu linia urm, practic nu
+        float theta = k * (d.x * initial_position.x + d.y * initial_position.z) - (omega * 0.3 * time);
 
         float cos_theta = cos(theta);
         float sin_theta = sin(theta);
@@ -55,13 +55,15 @@ void main()
         displacement.z += Q * a * d.y * cos_theta;
 
         //normale
-        tangent.x -= Q * a * k * d.x * d.x * sin_theta;
-        tangent.y -= a * k * d.x * cos_theta;
+        //derivata partiala dupa x
+        tangent.x = 1- Q * a * k * d.x * d.x * sin_theta;
+        tangent.y += a * k * d.x * cos_theta;
         tangent.z -= Q * a * k * d.x * d.y * sin_theta;
 
+        //derivata partiala dupa z
         bitangent.x -= Q * a * k * d.x * d.y * sin_theta;
-        bitangent.y -= a * k * d.y * cos_theta;
-        bitangent.z -= Q * a * k * d.y * d.y * sin_theta;
+        bitangent.y += a * k * d.y * cos_theta;
+        bitangent.z = 1 - Q * a * k * d.y * d.y * sin_theta;
     }
 
     vec3 final_normal = normalize(cross(bitangent, tangent));

@@ -166,8 +166,9 @@ void main()
     float fresnel = pow(1.0 - max(dot(N, V), 0.0), 5.0);
 
     vec3 deepWater = vec3(0.025, 0.120, 0.200);
-    vec3 shallowWater = vec3(0.075, 0.370, 0.480);
-    vec3 skyReflection = vec3(0.63, 0.80, 0.90);
+    //vec3 shallowWater = vec3(0.075, 0.370, 0.480);
+    vec3 shallowWater = vec3(0.180, 0.530, 0.780);
+    vec3 skyReflection = vec3(0.8, 0.96, 0.98);
 
     // Color mixing based on wave height/normals
     float facingUp = clamp(N.y, 0.0, 1.0);

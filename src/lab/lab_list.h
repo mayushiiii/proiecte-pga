@@ -17,3 +17,4 @@
 #include "lab/proiect1/proiect1.h"
 #include "lab/proiect2/proiect2.h"
 #include "lab/proiect3/proiect3.h"
+#include "lab/proiect3v2/proiect3v2.h"
