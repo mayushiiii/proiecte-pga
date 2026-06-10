@@ -78,7 +78,7 @@ void Proiect3v2::Init()
 
     // Light & material properties
     {
-        point_light_positions[9] = glm::vec3(0, 1, -5);
+        point_light_positions[9] = glm::vec3(0.0f, 4.0f, -15.0f);
         spot_light_positions[9] = glm::vec3(1, 1,-5);
 
 
@@ -116,6 +116,8 @@ void Proiect3v2::Init()
     CreateOceanGrid(resolution);
     displacement_texture = CreateComputeTexture(resolution);
     normal_texture = CreateComputeTexture(resolution);
+    GetSceneCamera()->SetPosition(glm::vec3(0.0f, 8.0f, 6.0f));
+    GetSceneCamera()->SetRotation(glm::vec3(glm::radians(-38.0f), 0.0f, 0.0f));
 }
 
 void Proiect3v2::FrameStart()
@@ -335,8 +337,9 @@ GLuint Proiect3v2::CreateComputeTexture(int resolution)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, resolution, resolution, 0, GL_RGBA, GL_FLOAT, NULL);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

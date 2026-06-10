@@ -1,4 +1,4 @@
-#version 430
+﻿#version 430
 
 // Input
 // TODO(student): Get color value from vertex shader
@@ -7,6 +7,7 @@ in vec3 world_normal;
 in vec2 texture_coord;
 
 uniform sampler2D texture_1;
+
 // Uniforms for light properties
 uniform int point_lights_count;
 uniform vec3 point_light_positions[11];
@@ -39,7 +40,10 @@ vec3 ComputePhongIllumination(vec3 light_position)
 
     if (length(diffuse_component) > 0.0)
     {
-        specular_component = material_ks * pow(max(dot(R, V), 0.0), float(material_shininess));
+        specular_component = material_ks * pow(
+            max(dot(R, V), 0.0),
+            float(material_shininess)
+        );
     }
 
     // TODO(student): Compute the final illumination as the sum of the diffuse and specular components
@@ -59,17 +63,23 @@ vec3 ComputePointLightSourcesIllumination()
 {
     vec3 lights_illumination = vec3(0.0);
 
-    for (int i = 0; i < point_lights_count; i++) {
+    for (int i = 0; i < point_lights_count; i++)
+    {
         vec3 light_position = point_light_positions[i];
         vec3 light_color = point_light_colors[i];
 
         vec3 light_illumination = ComputePhongIllumination(light_position);
-        float illumination_attenuation = ComputeDistanceAttenuation(light_position, world_position);
+        float illumination_attenuation = ComputeDistanceAttenuation(
+            light_position,
+            world_position
+        );
 
         // TODO(student): Add to the illumination of all light sources the result
         // of multiplying the illumination of the light source from the current iteration
         // with the attenuation of the illumination and the color of the illumination.
-        lights_illumination += light_color * light_illumination * illumination_attenuation;
+        lights_illumination += light_color
+            * light_illumination
+            * illumination_attenuation;
     }
 
     return lights_illumination;
@@ -79,7 +89,8 @@ vec3 ComputeSpotLightSourcesIllumination()
 {
     vec3 lights_illumination = vec3(0.0);
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         vec3 light_position = spot_light_positions[i];
         vec3 light_color = spot_light_colors[i];
         vec3 light_direction = normalize(spot_light_directions[i]);
@@ -93,17 +104,26 @@ vec3 ComputeSpotLightSourcesIllumination()
         if (cos_theta_angle > cos_phi_angle)
         {
             vec3 light_illumination = ComputePhongIllumination(light_position);
-            float illumination_attenuation = ComputeDistanceAttenuation(light_position, world_position);
+            float illumination_attenuation = ComputeDistanceAttenuation(
+                light_position,
+                world_position
+            );
 
             // TODO(student): Compute the attenuation factor specific to the spot light source
-            float spot_linear_att_factor = (cos_theta_angle - cos_phi_angle) / (1.0 - cos_phi_angle);
-            float quadratic_spot_light_att_factor = spot_linear_att_factor * spot_linear_att_factor;
+            float spot_linear_att_factor =
+                (cos_theta_angle - cos_phi_angle) / (1.0 - cos_phi_angle);
+
+            float quadratic_spot_light_att_factor =
+                spot_linear_att_factor * spot_linear_att_factor;
 
             // TODO(student): Add to the illumination of all light sources the result
             // of multiplying the illumination of the light source from the current iteration
             // with the attenuation of the illumination, the attenuation factor specific
             // to the light spot source and the color of the illumination.
-            lights_illumination += light_color * light_illumination * illumination_attenuation * quadratic_spot_light_att_factor;
+            lights_illumination += light_color
+                * light_illumination
+                * illumination_attenuation
+                * quadratic_spot_light_att_factor;
         }
     }
 
@@ -120,66 +140,34 @@ vec3 ComputeAmbientComponent()
     return ambient_component;
 }
 
-//void main()
-//{
-//    vec3 N = normalize(world_normal);
-//    vec3 V = normalize(eye_position - world_position);
-//
-//    vec3 light_position = point_light_positions[9];
-//    vec3 L = normalize(light_position - world_position);
-//    vec3 R = reflect(-L, N);
-//
-//    float diff = max(dot(N, L), 0.0);
-//
-//    float spec = pow(max(dot(R, V), 0.0), 120.0);
-//
-//    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 5.0);
-//
-//    vec3 deepWater = vec3(0.025, 0.120, 0.200);
-//    vec3 shallowWater = vec3(0.075, 0.370, 0.480);
-//    vec3 skyReflection = vec3(0.63, 0.80, 0.90);
-//
-//    float facingUp = clamp(N.y, 0.0, 1.0);
-//    vec3 waterColor = mix(deepWater, shallowWater, facingUp);
-//
-//    vec3 color = mix(waterColor, skyReflection, fresnel * 0.65);
-//
-//    color *= 0.18 + diff * 0.45;
-//
-//    color += vec3(1.0) * spec * 0.45;
-//
-//    out_color = vec4(color, 1.0);
-//}
-
 void main()
 {
     vec3 N = normalize(world_normal);
     vec3 V = normalize(eye_position - world_position);
 
-    // Use your primary spotlight/point light for the sun/moon reflection
     vec3 light_position = point_light_positions[9];
     vec3 L = normalize(light_position - world_position);
     vec3 R = reflect(-L, N);
 
-    float diff = max(dot(N, L), 0.0);
-    float spec = pow(max(dot(R, V), 0.0), 120.0);
-    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 5.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float NdotV = max(dot(N, V), 0.0);
 
-    vec3 deepWater = vec3(0.025, 0.120, 0.200);
-    //vec3 shallowWater = vec3(0.075, 0.370, 0.480);
-    vec3 shallowWater = vec3(0.180, 0.530, 0.780);
-    vec3 skyReflection = vec3(0.8, 0.96, 0.98);
+    float fresnel = pow(1.0 - NdotV, 5.0);
+    float spec = pow(max(dot(R, V), 0.0), 260.0);
 
-    // Color mixing based on wave height/normals
+    vec3 deepWater = vec3(0.02, 0.040, 0.085);
+    vec3 shallowWater = vec3(0.1, 0.5, 0.65);
+    vec3 skyReflection = vec3(0.6, 0.8, 1);
+
     float facingUp = clamp(N.y, 0.0, 1.0);
-    vec3 waterColor = mix(deepWater, shallowWater, facingUp);
-    vec3 color = mix(waterColor, skyReflection, fresnel * 0.65);
 
-    // Stylized ambient and diffuse light (guarantees it won't be black)
-    color *= 0.18 + diff * 0.45;
+    vec3 waterColor = mix(deepWater, shallowWater, smoothstep(0.35, 1.0, facingUp));
 
-    // Stylized specular highlights on the wave peaks
-    color += vec3(1.0) * spec * 0.45;
+    waterColor *= 0.20 + 0.08 * NdotL;
+
+    vec3 color = mix(waterColor, skyReflection, fresnel * 0.55);
+
+    color += vec3(0.65, 0.78, 0.90) * spec * 0.32;
 
     out_color = vec4(color, 1.0);
 }
